@@ -1,4 +1,4 @@
-#STM32CubeIDEを使ってみよう How To STM32CubeIDE 日本語版 (13) PWMでServoモーターを動かしてみよう
+#　STM32CubeIDEを使ってみよう How To STM32CubeIDE 日本語版 (13) PWMでServoモーターを動かしてみよう
 STM32CubeIDEを使ってみよう How To STM32CubeIDE 日本語版 (13) PWMでServoモーターを動かしてみようのMainファイルです。
 
 ピン設定は以下です
