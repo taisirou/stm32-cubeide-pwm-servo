@@ -107,26 +107,25 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  /*Add Code
-	   *   __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,X);
-	   * X=Min:2500.Max:11000  */
-     
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,3000);
-	  HAL_Delay(1000);
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,5000);
-	  HAL_Delay(1000);
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,7000);
-	  HAL_Delay(1000);
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,9000);
-	  HAL_Delay(1000);
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,11000);
-	  HAL_Delay(1000);
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,9000);
-	  HAL_Delay(1000);
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,7000);
-	  HAL_Delay(1000);
-	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,5000);
-	  HAL_Delay(1000);
+	  /*
+	  htim3.Instance->CCR1 = 25;  // duty cycle is .5 ms
+	  HAL_Delay(2000);
+	  htim3.Instance->CCR1 = 75;  // duty cycle is 1.5 ms
+	  HAL_Delay(2000);
+	  htim3.Instance->CCR1 = 125;  // duty cycle is 2.5 ms
+	  HAL_Delay(2000);
+	  htim3.Instance->CCR1 = 75;  // duty cycle is 1.5 ms
+	  HAL_Delay(2000);
+*/
+	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,25);
+	  HAL_Delay(2000);
+	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,75);
+	  HAL_Delay(2000);
+	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,125);
+	  HAL_Delay(2000);
+	  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,75);
+	  HAL_Delay(2000);
+
   }
   /* USER CODE END 3 */
 }
@@ -146,12 +145,11 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 8;
   RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
   RCC_OscInitStruct.PLL.PLLQ = 7;
@@ -186,6 +184,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 0 */
 
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
@@ -193,11 +192,20 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 8;
+  htim3.Init.Prescaler = 900;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 15000;
+  htim3.Init.Period = 1000;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
